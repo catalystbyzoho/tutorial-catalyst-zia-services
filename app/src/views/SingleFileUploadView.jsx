@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useForm } from '../hooks';
 import { AppConstants } from '../constants';
 import { AxiosInstance } from '../instances';
 
-import { ToastService } from '../services';
+import { CommonService, ToastService } from '../services';
 import { PrimaryButton, PrimaryButtonWithLoader } from '../components/Buttons';
 
 const initialValues = {
@@ -13,7 +13,11 @@ const initialValues = {
 };
 
 const SingleFileUploadView = ({ model }) => {
-	const [output, setOutput] = useState();
+	const ref = useRef();
+	const [output, setOutput] = useState({
+		text: '',
+		confidence: ''
+	});
 	const {
 		values,
 		errors,
@@ -25,8 +29,13 @@ const SingleFileUploadView = ({ model }) => {
 	} = useForm(initialValues);
 
 	useEffect(() => {
-		setOutput();
+		setOutput({
+			text: '',
+			confidence: ''
+		});
 		setMultipleValues({ ...initialValues });
+
+		ref.current.value = '';
 	}, [model, setMultipleValues]);
 
 	const clearOutput = useCallback(() => {
@@ -66,7 +75,7 @@ const SingleFileUploadView = ({ model }) => {
 	}, [model, setError, updateProcessing, values.image]);
 
 	return (
-		<div className='flex h-full w-full'>
+		<>
 			<div className='w-2/5 border-r border-gray-200 p-10'>
 				<h6 className='mb-2.5 text-xl font-bold text-gray-900'>Input</h6>
 				<div className='mb-5'>
@@ -76,7 +85,7 @@ const SingleFileUploadView = ({ model }) => {
 					<input
 						type='file'
 						name='image'
-						value={values.image ? values.image.fileName : ''}
+						ref={ref}
 						className={classNames(
 							'p-1 border rounded-md text-sm w-full mb-0.5',
 							errors.image ? ' border-red-600' : 'border-gray-200'
@@ -96,16 +105,23 @@ const SingleFileUploadView = ({ model }) => {
 			</div>
 			<div className='w-3/5 p-10'>
 				<h6 className='mb-2.5 text-xl font-bold text-gray-900'>Output</h6>
-				<div className='flex h-full flex-col'>
+				<p className='mb-2.5 text-[15px] font-bold text-gray-900'>Confidence</p>
+				<p className='mb-2.5 text-sm'>{output?.confidence || 'NA'}</p>
+				<p className='mb-2.5 text-[15px] font-bold text-gray-900'>Text</p>
+				<div className='flex h-[calc(100vh-15rem)] flex-col'>
 					<pre className='overflow-x-auto flex-1 text-[15px] border border-gray-200 p-5 rounded mb-5'>
-						{JSON.stringify(output, null, 4)}
+						{CommonService.getInstance().isJSONString(output.text)
+							? JSON.stringify(JSON.parse(output.text), null, 4)
+							: CommonService.getInstance().isJSON(output.text)
+							? JSON.stringify(output.text, null, 4)
+							: output.text}
 					</pre>
 					<div className='flex justify-center'>
 						<PrimaryButton label='Clear Output' onClick={clearOutput} />
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

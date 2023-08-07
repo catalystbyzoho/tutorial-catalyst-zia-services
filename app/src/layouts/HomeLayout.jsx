@@ -81,7 +81,7 @@ const HomeLayout = () => {
 						</NavLink>
 					</div>
 				</div>
-				<div className='w-[calc(100vw-20rem)]'>
+				<div className='w-[calc(100vw-20rem)] flex'>
 					<Outlet />
 				</div>
 			</div>

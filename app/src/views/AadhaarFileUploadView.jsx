@@ -5,7 +5,7 @@ import { useForm } from '../hooks';
 import { AppConstants } from '../constants';
 import { AxiosInstance } from '../instances';
 
-import { ToastService } from '../services';
+import { CommonService, ToastService } from '../services';
 import { PrimaryButton, PrimaryButtonWithLoader } from '../components/Buttons';
 
 const initialValues = {
@@ -14,7 +14,10 @@ const initialValues = {
 };
 
 const AadhaarFileUploadView = () => {
-	const [output, setOutput] = useState();
+	const [output, setOutput] = useState({
+		confidence: '',
+		text: ''
+	});
 	const {
 		values,
 		errors,
@@ -26,7 +29,7 @@ const AadhaarFileUploadView = () => {
 	} = useForm(initialValues);
 
 	useEffect(() => {
-		setOutput();
+		setOutput({ confidence: '', text: '' });
 		setMultipleValues({ ...initialValues });
 	}, [setMultipleValues]);
 
@@ -76,7 +79,7 @@ const AadhaarFileUploadView = () => {
 	}, [setError, updateProcessing, values]);
 
 	return (
-		<div className='flex h-full'>
+		<>
 			<div className='w-2/5 border-r border-gray-200 p-10'>
 				<h6 className='mb-2.5 text-xl font-bold text-gray-900'>Input</h6>
 				<div className='mb-5'>
@@ -86,7 +89,7 @@ const AadhaarFileUploadView = () => {
 					<input
 						type='file'
 						name='front'
-                        value={values.front ? values.front.fileName : ''}
+						value={values.front ? values.front.fileName : ''}
 						className={classNames(
 							'p-1 border rounded-md text-sm w-full mb-0.5',
 							errors.front ? ' border-red-600' : 'border-gray-200'
@@ -103,7 +106,7 @@ const AadhaarFileUploadView = () => {
 					<input
 						type='file'
 						name='back'
-                        value={values.back ? values.back.fileName : ''}
+						value={values.back ? values.back.fileName : ''}
 						className={classNames(
 							'p-1 border rounded-md text-sm w-full mb-0.5',
 							errors.back ? ' border-red-600' : 'border-gray-200'
@@ -123,16 +126,23 @@ const AadhaarFileUploadView = () => {
 			</div>
 			<div className='w-3/5 p-10'>
 				<h6 className='mb-2.5 text-xl font-bold text-gray-900'>Output</h6>
-				<div className='flex h-full flex-col'>
-					<pre className='overflow-auto flex-1 text-[15px] border border-gray-200 p-5 rounded mb-5'>
-						{JSON.stringify(output, null, 4)}
+				<p className='mb-2.5 text-[15px] font-bold text-gray-900'>Confidence</p>
+				<p className='mb-2.5 text-sm'>{output.confidence || 'NA'}</p>
+				<p className='mb-2.5 text-[15px] font-bold text-gray-900'>Text</p>
+				<div className='flex h-[calc(100vh-15rem)] flex-col'>
+					<pre className='overflow-x-auto flex-1 text-[15px] border border-gray-200 p-5 rounded mb-5'>
+						{CommonService.getInstance().isJSONString(output.text)
+							? JSON.stringify(JSON.parse(output.text), null, 4)
+							: CommonService.getInstance().isJSON(output.text)
+							? JSON.stringify(output.text, null, 4)
+							: output.text}
 					</pre>
 					<div className='flex justify-center'>
 						<PrimaryButton label='Clear Output' onClick={clearOutput} />
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

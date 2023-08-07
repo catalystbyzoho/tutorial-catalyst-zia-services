@@ -41,7 +41,13 @@ app.post(
 					.extractOpticalCharacters(inputFileStream, {
 						modelType: 'PAN'
 					})
-					.then((data) => responsePojo.setData({ data }));
+					.then((data) =>
+						responsePojo.setData({
+							data: {
+								text: data
+							}
+						})
+					);
 			} else if (model === 'ocr') {
 				await zia
 					.extractOpticalCharacters(inputFileStream, {
@@ -54,11 +60,19 @@ app.post(
 					.extractOpticalCharacters(inputFileStream, {
 						modelType: 'CHEQUE'
 					})
-					.then((data) => responsePojo.setData({ data }));
+					.then((data) =>
+						responsePojo.setData({
+							data: {
+								text: data
+							}
+						})
+					);
 			} else if (model === 'barcode') {
 				await zia
 					.scanBarcode(inputFileStream)
-					.then((data) => responsePojo.setData({ data }));
+					.then((data) =>
+						responsePojo.setData({ data: { text: data.content } })
+					);
 			} else {
 				await zia
 					.extractOpticalCharacters(inputFileStream, {
@@ -115,10 +129,7 @@ app.post('/aadhaar', async (request, response) => {
 			)
 			.then((data) =>
 				responsePojo.setData({
-					data: {
-						...data,
-						text: JSON.parse(data.text)
-					}
+					data
 				})
 			);
 	} catch (err) {
