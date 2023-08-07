@@ -1,0 +1,11 @@
+{
+  "name": "zia_services_function",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "solutions@zohocatalyst.com",
+  "dependencies": {
+    "express": "^4.17.3",
+    "multer": "^1.4.5-lts.1",
+    "zcatalyst-sdk-node": "latest"
+  }
+}

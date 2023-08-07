@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "targets": [
+      "zia_services_function"
+    ],
+    "source": "functions"
+  },
+  "client": {
+    "source": "app",
+    "plugin": "zcatalyst-cli-plugin-react"
+  }
+}
