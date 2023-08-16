@@ -125,7 +125,7 @@ app.post('/aadhaar', async (request, response) => {
 			.extractAadhaarCharacters(
 				fs.createReadStream(front.path),
 				fs.createReadStream(back.path),
-				'eng,tam'
+				'eng'
 			)
 			.then((data) =>
 				responsePojo.setData({
